@@ -1,3 +1,4 @@
+let allQuestions = [];
 let quizData = [];
 let currentIndex = 0;
 let score = 0;
@@ -11,35 +12,51 @@ const scoreText = document.getElementById("score-text");
 const restartBtn = document.getElementById("restart-btn");
 const qrCodeDiv = document.getElementById("qr-code");
 
-// Load questions from JSON
-fetch("questions.json")
-  .then(res => res.json())
-  .then(data => {
-    quizData = data;
-    loadQuestion();
-  })
-  .catch(err => {
-    questionEl.textContent = "❌ Error loading questions!";
-    console.error(err);
-  });
+// Shuffle array and select num unique questions
+function getRandomQuestions(arr, num) {
+  if (num > arr.length) return [...arr];
 
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled.slice(0, num);
+}
+
+// Start or restart quiz
+function startNewQuiz(numQuestions) {
+  quizData = getRandomQuestions(allQuestions, numQuestions);
+  currentIndex = 0;
+  score = 0;
+
+  resultBox.classList.add("hidden");
+  quizBox.classList.remove("hidden");
+  nextBtn.style.display = "none";
+  loadQuestion();
+}
+
+// Load current question
 function loadQuestion() {
   const current = quizData[currentIndex];
   questionEl.textContent = `${currentIndex + 1}. ${current.question}`;
   optionsEl.innerHTML = "";
+  nextBtn.style.display = "none";
 
   current.options.forEach(option => {
-    const button = document.createElement("button");
-    button.textContent = option;
-    button.addEventListener("click", () => checkAnswer(option));
-    optionsEl.appendChild(button);
+    const btn = document.createElement("button");
+    btn.textContent = option;
+    btn.addEventListener("click", () => checkAnswer(option));
+    optionsEl.appendChild(btn);
   });
 }
 
+// Check answer
 function checkAnswer(selected) {
   const correct = quizData[currentIndex].answer;
   const buttons = optionsEl.querySelectorAll("button");
-  
+
   buttons.forEach(btn => {
     btn.disabled = true;
     if (btn.textContent === correct) {
@@ -55,6 +72,7 @@ function checkAnswer(selected) {
   nextBtn.style.display = "block";
 }
 
+// Next button
 nextBtn.addEventListener("click", () => {
   currentIndex++;
   nextBtn.style.display = "none";
@@ -65,15 +83,13 @@ nextBtn.addEventListener("click", () => {
   }
 });
 
+// Show result & generate QR
 function showResult() {
   quizBox.classList.add("hidden");
   resultBox.classList.remove("hidden");
   scoreText.textContent = `Your Score: ${score} / ${quizData.length}`;
 
-  // Clear old QR
   qrCodeDiv.innerHTML = "";
-
-  // Generate QR for the same quiz URL
   const currentURL = window.location.href.split("?")[0];
   new QRCode(qrCodeDiv, {
     text: currentURL,
@@ -82,13 +98,17 @@ function showResult() {
   });
 }
 
-restartBtn.addEventListener("click", () => {
-  currentIndex = 0;
-  score = 0;
-  resultBox.classList.add("hidden");
-  quizBox.classList.remove("hidden");
-  nextBtn.style.display = "none";
-  loadQuestion();
-});
+// Restart quiz
+restartBtn.addEventListener("click", () => startNewQuiz(10));
 
-nextBtn.style.display = "none";
+// Load questions from JSON
+fetch("questions.json")
+  .then(res => res.json())
+  .then(data => {
+    allQuestions = data;
+    startNewQuiz(10);
+  })
+  .catch(err => {
+    questionEl.textContent = "❌ Error loading questions!";
+    console.error(err);
+  });
