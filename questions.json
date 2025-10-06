@@ -1,0 +1,27 @@
+[
+  {
+    "question": "What is the capital of Japan?",
+    "options": ["Beijing", "Tokyo", "Seoul", "Bangkok"],
+    "answer": "Tokyo"
+  },
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "options": ["Earth", "Venus", "Mars", "Jupiter"],
+    "answer": "Mars"
+  },
+  {
+    "question": "Who wrote 'Romeo and Juliet'?",
+    "options": ["William Wordsworth", "William Shakespeare", "John Milton", "Jane Austen"],
+    "answer": "William Shakespeare"
+  },
+  {
+    "question": "What is the largest ocean on Earth?",
+    "options": ["Atlantic Ocean", "Pacific Ocean", "Indian Ocean", "Arctic Ocean"],
+    "answer": "Pacific Ocean"
+  },
+  {
+    "question": "Which element has the chemical symbol 'O'?",
+    "options": ["Oxygen", "Gold", "Osmium", "Oxide"],
+    "answer": "Oxygen"
+  }
+]
